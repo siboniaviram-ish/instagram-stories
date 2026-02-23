@@ -111,11 +111,15 @@ export class StoryEditorComponent implements OnDestroy {
   private showFilterToast(name: string): void {
     if (name === 'Original') return;
     if (this.toastTimer) clearTimeout(this.toastTimer);
-    this.filterToastName = name;
-    this.filterToastVisible = true;
-    this.toastTimer = setTimeout(() => {
-      this.filterToastVisible = false;
-    }, 2000);
+    // Force destroy the @if block so the CSS animation restarts
+    this.filterToastVisible = false;
+    setTimeout(() => {
+      this.filterToastName = name;
+      this.filterToastVisible = true;
+      this.toastTimer = setTimeout(() => {
+        this.filterToastVisible = false;
+      }, 2000);
+    });
   }
 
   onAdjustmentChanged(filter: string): void {
