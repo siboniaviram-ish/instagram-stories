@@ -12,6 +12,7 @@ export interface TextOverlay {
   x: number;
   y: number;
   fontSize: number;
+  style?: 'text' | 'location' | 'hashtag' | 'mention' | 'music';
 }
 
 @Component({
@@ -37,6 +38,11 @@ export class StoryEditorComponent implements OnDestroy {
   showTextInput = false;
   showEmojiPicker = false;
   newText = '';
+
+  // Sticker tool states
+  activePrompt: 'location' | 'hashtag' | 'mention' | 'music' | null = null;
+  promptInput = '';
+
   private objectUrl = '';
   private toastTimer: any = null;
   private draggingOverlay: TextOverlay | null = null;
@@ -47,6 +53,22 @@ export class StoryEditorComponent implements OnDestroy {
     '❤️', '🔥', '😍', '😂', '🥰', '✨', '🎉', '💯',
     '🙌', '👏', '🤩', '😎', '🥳', '💪', '⭐', '🌟',
     '🎵', '🦋', '🌈', '☀️', '🌙', '💫', '🍕', '🎸'
+  ];
+
+  readonly locationSuggestions = [
+    'Tel Aviv, Israel', 'New York, NY', 'Los Angeles, CA', 'London, UK',
+    'Paris, France', 'Tokyo, Japan', 'Dubai, UAE', 'Barcelona, Spain'
+  ];
+
+  readonly musicSuggestions = [
+    { title: 'Blinding Lights', artist: 'The Weeknd' },
+    { title: 'Levitating', artist: 'Dua Lipa' },
+    { title: 'Stay', artist: 'The Kid LAROI, Justin Bieber' },
+    { title: 'Peaches', artist: 'Justin Bieber' },
+    { title: 'Montero', artist: 'Lil Nas X' },
+    { title: 'Good 4 U', artist: 'Olivia Rodrigo' },
+    { title: 'Heat Waves', artist: 'Glass Animals' },
+    { title: 'Save Your Tears', artist: 'The Weeknd' }
   ];
 
   constructor(private storiesService: StoriesService) {}
@@ -100,8 +122,9 @@ export class StoryEditorComponent implements OnDestroy {
     this.adjustmentFilter = filter;
   }
 
+  // --- Text ---
   addText(): void {
-    this.showEmojiPicker = false;
+    this.closeAllPanels();
     this.showTextInput = true;
     this.newText = '';
   }
@@ -113,7 +136,8 @@ export class StoryEditorComponent implements OnDestroy {
         text: this.newText.trim(),
         x: 100,
         y: 150,
-        fontSize: 24
+        fontSize: 24,
+        style: 'text'
       });
     }
     this.showTextInput = false;
@@ -125,8 +149,9 @@ export class StoryEditorComponent implements OnDestroy {
     this.newText = '';
   }
 
+  // --- Emoji ---
   toggleEmojiPicker(): void {
-    this.showTextInput = false;
+    this.closeAllPanels();
     this.showEmojiPicker = !this.showEmojiPicker;
   }
 
@@ -141,6 +166,126 @@ export class StoryEditorComponent implements OnDestroy {
     this.showEmojiPicker = false;
   }
 
+  // --- Location ---
+  openLocationPicker(): void {
+    this.closeAllPanels();
+    this.activePrompt = 'location';
+    this.promptInput = '';
+  }
+
+  selectLocation(location: string): void {
+    this.overlays.push({
+      id: 'loc-' + Date.now(),
+      text: '📍 ' + location,
+      x: 60,
+      y: 80,
+      fontSize: 16,
+      style: 'location'
+    });
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  confirmPromptAsLocation(): void {
+    if (this.promptInput.trim()) {
+      this.selectLocation(this.promptInput.trim());
+    }
+  }
+
+  get filteredLocations(): string[] {
+    if (!this.promptInput.trim()) return this.locationSuggestions;
+    const q = this.promptInput.toLowerCase();
+    return this.locationSuggestions.filter(l => l.toLowerCase().includes(q));
+  }
+
+  // --- Hashtag ---
+  openHashtagInput(): void {
+    this.closeAllPanels();
+    this.activePrompt = 'hashtag';
+    this.promptInput = '';
+  }
+
+  confirmHashtag(): void {
+    let tag = this.promptInput.trim();
+    if (!tag) return;
+    if (!tag.startsWith('#')) tag = '#' + tag;
+    this.overlays.push({
+      id: 'tag-' + Date.now(),
+      text: tag,
+      x: 80,
+      y: 120,
+      fontSize: 22,
+      style: 'hashtag'
+    });
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  // --- Mention ---
+  openMentionInput(): void {
+    this.closeAllPanels();
+    this.activePrompt = 'mention';
+    this.promptInput = '';
+  }
+
+  confirmMention(): void {
+    let name = this.promptInput.trim();
+    if (!name) return;
+    if (!name.startsWith('@')) name = '@' + name;
+    this.overlays.push({
+      id: 'men-' + Date.now(),
+      text: name,
+      x: 80,
+      y: 160,
+      fontSize: 20,
+      style: 'mention'
+    });
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  // --- Music ---
+  openMusicPicker(): void {
+    this.closeAllPanels();
+    this.activePrompt = 'music';
+    this.promptInput = '';
+  }
+
+  selectMusic(title: string, artist: string): void {
+    this.overlays.push({
+      id: 'mus-' + Date.now(),
+      text: '🎵 ' + title + ' — ' + artist,
+      x: 40,
+      y: 200,
+      fontSize: 14,
+      style: 'music'
+    });
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  get filteredMusic(): { title: string; artist: string }[] {
+    if (!this.promptInput.trim()) return this.musicSuggestions;
+    const q = this.promptInput.toLowerCase();
+    return this.musicSuggestions.filter(
+      m => m.title.toLowerCase().includes(q) || m.artist.toLowerCase().includes(q)
+    );
+  }
+
+  // --- Common ---
+  closeAllPanels(): void {
+    this.showTextInput = false;
+    this.showEmojiPicker = false;
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  cancelPrompt(): void {
+    this.activePrompt = null;
+    this.promptInput = '';
+  }
+
+  // --- Drag ---
   onOverlayDragStart(event: MouseEvent, overlay: TextOverlay): void {
     event.preventDefault();
     this.draggingOverlay = overlay;
@@ -188,6 +333,7 @@ export class StoryEditorComponent implements OnDestroy {
     document.addEventListener('touchend', onEnd);
   }
 
+  // --- Post ---
   post(): void {
     if (!this.mediaSrc) return;
 

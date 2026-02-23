@@ -5,11 +5,11 @@
       [class.active]="i === activeIndex"
       (click)="selectFilter(preset, i)"
     >
-      <div class="filter-thumb">
+      <div class="filter-thumb" [ngStyle]="{'filter': preset.cssFilter}">
         @if (thumbnailSrc) {
-          <img [src]="thumbnailSrc" [style.filter]="preset.cssFilter" alt="" />
+          <img [src]="thumbnailSrc" alt="" />
         } @else {
-          <div class="thumb-placeholder" [style.filter]="preset.cssFilter"></div>
+          <div class="thumb-placeholder"></div>
         }
       </div>
       <span class="filter-name">{{ preset.name }}</span>

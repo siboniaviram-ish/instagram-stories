@@ -8,17 +8,50 @@
     </button>
     <div class="header-tools">
       @if (mediaSrc) {
+        <!-- Text -->
         <button class="tool-btn" (click)="addText()" title="Add text">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
           </svg>
         </button>
+        <!-- Emoji -->
         <button class="tool-btn" (click)="toggleEmojiPicker()" title="Add emoji">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
             <line x1="9" y1="9" x2="9.01" y2="9"/>
             <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </button>
+        <!-- Location -->
+        <button class="tool-btn" (click)="openLocationPicker()" title="Add location">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+        </button>
+        <!-- Hashtag -->
+        <button class="tool-btn" (click)="openHashtagInput()" title="Add hashtag">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <line x1="4" y1="9" x2="20" y2="9"/>
+            <line x1="4" y1="15" x2="20" y2="15"/>
+            <line x1="10" y1="3" x2="8" y2="21"/>
+            <line x1="16" y1="3" x2="14" y2="21"/>
+          </svg>
+        </button>
+        <!-- Mention -->
+        <button class="tool-btn" (click)="openMentionInput()" title="Tag someone">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"/>
+          </svg>
+        </button>
+        <!-- Music -->
+        <button class="tool-btn" (click)="openMusicPicker()" title="Add music">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
           </svg>
         </button>
       }
@@ -52,13 +85,109 @@
     </div>
   }
 
+  <!-- Location picker -->
+  @if (activePrompt === 'location') {
+    <div class="sticker-panel">
+      <div class="sticker-panel-header">
+        <span class="sticker-panel-title">📍 Add Location</span>
+        <button class="sticker-close" (click)="cancelPrompt()">✕</button>
+      </div>
+      <div class="sticker-search">
+        <input
+          [(ngModel)]="promptInput"
+          placeholder="Search location..."
+          autofocus
+          (keydown.enter)="confirmPromptAsLocation()"
+        />
+      </div>
+      <div class="sticker-list">
+        @for (loc of filteredLocations; track loc) {
+          <button class="sticker-list-item" (click)="selectLocation(loc)">
+            <span class="sticker-icon">📍</span>
+            <span>{{ loc }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Hashtag input -->
+  @if (activePrompt === 'hashtag') {
+    <div class="sticker-panel">
+      <div class="sticker-panel-header">
+        <span class="sticker-panel-title"># Hashtag</span>
+        <button class="sticker-close" (click)="cancelPrompt()">✕</button>
+      </div>
+      <div class="sticker-search">
+        <input
+          [(ngModel)]="promptInput"
+          placeholder="Type a hashtag..."
+          autofocus
+          (keydown.enter)="confirmHashtag()"
+        />
+      </div>
+      <div class="sticker-actions">
+        <button class="sticker-confirm" (click)="confirmHashtag()">Add #{{ promptInput || '...' }}</button>
+      </div>
+    </div>
+  }
+
+  <!-- Mention input -->
+  @if (activePrompt === 'mention') {
+    <div class="sticker-panel">
+      <div class="sticker-panel-header">
+        <span class="sticker-panel-title">@ Tag Someone</span>
+        <button class="sticker-close" (click)="cancelPrompt()">✕</button>
+      </div>
+      <div class="sticker-search">
+        <input
+          [(ngModel)]="promptInput"
+          placeholder="Type a username..."
+          autofocus
+          (keydown.enter)="confirmMention()"
+        />
+      </div>
+      <div class="sticker-actions">
+        <button class="sticker-confirm" (click)="confirmMention()">Tag @{{ promptInput || '...' }}</button>
+      </div>
+    </div>
+  }
+
+  <!-- Music picker -->
+  @if (activePrompt === 'music') {
+    <div class="sticker-panel">
+      <div class="sticker-panel-header">
+        <span class="sticker-panel-title">🎵 Add Music</span>
+        <button class="sticker-close" (click)="cancelPrompt()">✕</button>
+      </div>
+      <div class="sticker-search">
+        <input
+          [(ngModel)]="promptInput"
+          placeholder="Search songs..."
+          autofocus
+        />
+      </div>
+      <div class="sticker-list">
+        @for (song of filteredMusic; track song.title) {
+          <button class="sticker-list-item" (click)="selectMusic(song.title, song.artist)">
+            <span class="sticker-icon">🎵</span>
+            <div class="song-info">
+              <span class="song-title">{{ song.title }}</span>
+              <span class="song-artist">{{ song.artist }}</span>
+            </div>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
   <!-- Preview area -->
   <div class="editor-preview">
     @if (mediaSrc) {
       @if (mediaType === 'video') {
         <video
           [src]="mediaSrc"
-          [style.filter]="combinedFilter"
+          [ngStyle]="{'filter': combinedFilter}"
           autoplay
           muted
           loop
@@ -67,15 +196,19 @@
       } @else {
         <img
           [src]="mediaSrc"
-          [style.filter]="combinedFilter"
+          [ngStyle]="{'filter': combinedFilter}"
           alt="Preview"
         />
       }
 
-      <!-- Text/emoji overlays -->
+      <!-- Text/emoji/sticker overlays -->
       @for (overlay of overlays; track overlay.id) {
         <div
           class="text-overlay"
+          [class.sticker-location]="overlay.style === 'location'"
+          [class.sticker-hashtag]="overlay.style === 'hashtag'"
+          [class.sticker-mention]="overlay.style === 'mention'"
+          [class.sticker-music]="overlay.style === 'music'"
           [style.left.px]="overlay.x"
           [style.top.px]="overlay.y"
           [style.fontSize.px]="overlay.fontSize"
