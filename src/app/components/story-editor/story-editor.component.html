@@ -136,7 +136,7 @@
   @if (activePrompt === 'mention') {
     <div class="sticker-panel">
       <div class="sticker-panel-header">
-        <span class="sticker-panel-title">@ Tag Someone</span>
+        <span class="sticker-panel-title">&#64; Tag Someone</span>
         <button class="sticker-close" (click)="cancelPrompt()">✕</button>
       </div>
       <div class="sticker-search">
@@ -148,7 +148,7 @@
         />
       </div>
       <div class="sticker-actions">
-        <button class="sticker-confirm" (click)="confirmMention()">Tag @{{ promptInput || '...' }}</button>
+        <button class="sticker-confirm" (click)="confirmMention()">Tag &#64;{{ promptInput || '...' }}</button>
       </div>
     </div>
   }
@@ -214,7 +214,7 @@
           [style.fontSize.px]="overlay.fontSize"
           (mousedown)="onOverlayDragStart($event, overlay)"
           (touchstart)="onOverlayTouchStart($event, overlay)"
-        >{{ overlay.text }}</div>
+        ><span>{{ overlay.text }}</span></div>
       }
 
       <!-- Filter name toast -->
