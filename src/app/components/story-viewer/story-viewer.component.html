@@ -1,0 +1,19 @@
+<!-- Zuck.js container (hidden but in the DOM for zuck to populate) -->
+<div #storiesContainer id="stories" class="storiesWrapper"></div>
+
+<!-- Angular overlay for reactions and comments on top of zuck.js modal -->
+@if (isOpen) {
+  <div class="story-overlay">
+    <app-story-reactions
+      [currentStoryItemId]="currentStoryItemId"
+    />
+    <app-story-comments
+      [currentStoryItemId]="currentStoryItemId"
+      [drawerOpen]="commentsDrawerOpen"
+      (drawerOpenChange)="onCommentsDrawerChanged($event)"
+      (inputFocused)="onCommentInputFocused()"
+      (inputBlurred)="onCommentInputBlurred()"
+      (commentSent)="onCommentSent()"
+    />
+  </div>
+}

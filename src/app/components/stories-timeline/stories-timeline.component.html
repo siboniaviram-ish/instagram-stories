@@ -1,0 +1,22 @@
+<div class="stories-timeline">
+  <div class="stories-scroll">
+    @for (user of users; track user.id) {
+      <div class="story-avatar-wrapper" (click)="onAvatarClick(user)">
+        <div class="avatar-ring" [class.unseen]="hasUnseenStories(user)" [class.seen]="!hasUnseenStories(user)">
+          <div class="avatar-inner">
+            <img [src]="user.photo" [alt]="user.name" loading="lazy" />
+          </div>
+        </div>
+        @if (user.isOwn) {
+          <div class="add-icon">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="8" fill="#0095F6"/>
+              <path d="M8 4v8M4 8h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        }
+        <span class="username">{{ user.isOwn ? 'Your Story' : user.name.split(' ')[0] }}</span>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,115 @@
+/* Global styles for Instagram Stories clone */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #fafafa;
+  overflow-x: hidden;
+}
+
+/* ==========================================
+   Zuck.js Overrides & Enhancements
+   ========================================== */
+
+/* Story viewer backdrop on desktop */
+#zuck-modal {
+  z-index: 9999 !important;
+}
+
+#zuck-modal-content {
+  background: #000 !important;
+}
+
+/* Desktop: center the viewer with max-width */
+@media (min-width: 768px) {
+  #zuck-modal .story-viewer {
+    max-width: 420px !important;
+    margin: 0 auto !important;
+  }
+
+  #zuck-modal-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+}
+
+/* Progress bar enhancements */
+#zuck-modal .story-viewer .head .left .time {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 12px !important;
+}
+
+/* Header styling */
+#zuck-modal .story-viewer .head {
+  z-index: 10 !important;
+}
+
+#zuck-modal .story-viewer .head .left .info .name {
+  color: white !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Close button */
+#zuck-modal .story-viewer .head .right .close {
+  color: white !important;
+  opacity: 0.9 !important;
+}
+
+/* Ken Burns effect on story images */
+#zuck-modal .story-viewer .slides .item.active img {
+  animation: ken-burns 6s ease-in-out forwards !important;
+  object-fit: cover !important;
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.1) translate(-1%, -1%);
+  }
+}
+
+/* Video stories */
+#zuck-modal .story-viewer .slides .item video {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Story slides fill the container */
+#zuck-modal .story-viewer .slides .item {
+  background: #000 !important;
+}
+
+#zuck-modal .story-viewer .slides .item img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Text story appearance for SVG data URIs */
+#zuck-modal .story-viewer .slides .item img[src^="data:image/svg"] {
+  animation: none !important;
+  object-fit: contain !important;
+}
+
+/* Hide zuck.js internal timeline (we use our own custom timeline component) */
+#stories {
+  width: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

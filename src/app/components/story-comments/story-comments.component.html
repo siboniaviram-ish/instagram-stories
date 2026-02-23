@@ -1,0 +1,43 @@
+<!-- Inline comment input at bottom of viewer -->
+<div class="comment-input-bar">
+  <input
+    #commentInput
+    type="text"
+    [(ngModel)]="commentText"
+    placeholder="Send message..."
+    (focus)="onInputFocus()"
+    (blur)="onInputBlur()"
+    (keydown)="onKeydown($event)"
+  />
+  @if (commentText.trim()) {
+    <button class="send-btn" (click)="sendComment()">Send</button>
+  }
+</div>
+
+<!-- Swipe-up comments drawer -->
+@if (drawerOpen) {
+  <div class="drawer-backdrop" (click)="closeDrawer()"></div>
+  <div
+    class="comments-drawer"
+    (touchstart)="onDrawerTouchStart($event)"
+    (touchend)="onDrawerTouchEnd($event)"
+  >
+    <div class="drawer-handle"></div>
+    <h3>Comments</h3>
+    <div class="comments-list">
+      @if (comments.length === 0) {
+        <p class="no-comments">No comments yet</p>
+      }
+      @for (comment of comments; track comment.id) {
+        <div class="comment-item">
+          <img [src]="comment.avatar" [alt]="comment.username" class="comment-avatar" />
+          <div class="comment-body">
+            <span class="comment-username">{{ comment.username }}</span>
+            <span class="comment-text">{{ comment.text }}</span>
+            <span class="comment-time">{{ formatTime(comment.time) }}</span>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

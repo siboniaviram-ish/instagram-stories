@@ -1,0 +1,127 @@
+<div class="editor-overlay">
+  <!-- Header -->
+  <div class="editor-header">
+    <button class="back-btn" (click)="cancel()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </button>
+    <div class="header-tools">
+      @if (mediaSrc) {
+        <button class="tool-btn" (click)="addText()" title="Add text">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+          </svg>
+        </button>
+        <button class="tool-btn" (click)="toggleEmojiPicker()" title="Add emoji">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </button>
+      }
+    </div>
+    <button class="share-btn" [disabled]="!mediaSrc" (click)="post()">Share</button>
+  </div>
+
+  <!-- Text input modal -->
+  @if (showTextInput) {
+    <div class="text-input-overlay">
+      <input
+        class="text-input-field"
+        [(ngModel)]="newText"
+        placeholder="Type your text..."
+        autofocus
+        (keydown.enter)="confirmText()"
+      />
+      <div class="text-input-actions">
+        <button class="text-cancel" (click)="cancelText()">Cancel</button>
+        <button class="text-confirm" (click)="confirmText()">Done</button>
+      </div>
+    </div>
+  }
+
+  <!-- Emoji picker -->
+  @if (showEmojiPicker) {
+    <div class="emoji-picker">
+      @for (emoji of emojis; track emoji) {
+        <button class="emoji-btn" (click)="addEmoji(emoji)">{{ emoji }}</button>
+      }
+    </div>
+  }
+
+  <!-- Preview area -->
+  <div class="editor-preview">
+    @if (mediaSrc) {
+      @if (mediaType === 'video') {
+        <video
+          [src]="mediaSrc"
+          [style.filter]="combinedFilter"
+          autoplay
+          muted
+          loop
+          playsinline
+        ></video>
+      } @else {
+        <img
+          [src]="mediaSrc"
+          [style.filter]="combinedFilter"
+          alt="Preview"
+        />
+      }
+
+      <!-- Text/emoji overlays -->
+      @for (overlay of overlays; track overlay.id) {
+        <div
+          class="text-overlay"
+          [style.left.px]="overlay.x"
+          [style.top.px]="overlay.y"
+          [style.fontSize.px]="overlay.fontSize"
+          (mousedown)="onOverlayDragStart($event, overlay)"
+          (touchstart)="onOverlayTouchStart($event, overlay)"
+        >{{ overlay.text }}</div>
+      }
+
+      <!-- Filter name toast -->
+      @if (filterToastVisible) {
+        <div class="filter-toast">{{ filterToastName }}</div>
+      }
+    } @else {
+      <div class="upload-prompt" (click)="triggerUpload()">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        <span>Tap to upload photo or video</span>
+      </div>
+    }
+  </div>
+
+  <!-- Hidden file input -->
+  <input
+    #fileInput
+    type="file"
+    accept="image/*,video/*"
+    style="display: none"
+    (change)="onFileSelected($event)"
+  />
+
+  <!-- Filter strip -->
+  @if (mediaSrc) {
+    <app-filter-strip
+      [mediaSrc]="mediaSrc"
+      [isVideo]="mediaType === 'video'"
+      (filterSelected)="onFilterSelected($event)"
+    />
+  }
+
+  <!-- Adjustment sliders -->
+  @if (mediaSrc) {
+    <app-adjustment-sliders
+      (adjustmentChanged)="onAdjustmentChanged($event)"
+    />
+  }
+</div>

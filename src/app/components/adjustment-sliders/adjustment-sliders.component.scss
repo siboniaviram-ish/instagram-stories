@@ -1,0 +1,80 @@
+.adjustments {
+  width: 100%;
+}
+
+.adjust-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  padding: 8px 12px;
+  cursor: pointer;
+  opacity: 0.85;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.sliders-panel {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    width: 72px;
+    flex-shrink: 0;
+  }
+
+  input[type='range'] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+  }
+
+  .value {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    width: 28px;
+    text-align: right;
+  }
+}
+
+.reset-btn {
+  align-self: flex-end;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}

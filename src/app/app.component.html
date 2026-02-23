@@ -1,0 +1,42 @@
+<div class="app-container">
+  <!-- Instagram-style header -->
+  <header class="app-header">
+    <div class="header-logo">
+      <svg width="103" height="29" viewBox="0 0 103 29" fill="none">
+        <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="600" fill="#262626">Instagram</text>
+      </svg>
+    </div>
+  </header>
+
+  <!-- Stories timeline row -->
+  <app-stories-timeline
+    [users]="users"
+    (storySelected)="onStorySelected($event)"
+    (addStoryClicked)="onAddStory()"
+  />
+
+  <!-- Feed placeholder -->
+  <div class="feed-placeholder">
+    <div class="feed-card" *ngFor="let i of [1,2,3]">
+      <div class="feed-card-header">
+        <div class="feed-avatar-placeholder"></div>
+        <div class="feed-name-placeholder"></div>
+      </div>
+      <div class="feed-image-placeholder"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Story viewer (renders zuck.js + overlays) -->
+<app-story-viewer
+  [openStoryId]="selectedStoryId"
+  (viewerClosed)="onViewerClosed()"
+/>
+
+<!-- Story editor -->
+@if (showEditor) {
+  <app-story-editor
+    (editorClosed)="onEditorClosed()"
+    (storyPosted)="onStoryPosted()"
+  />
+}
